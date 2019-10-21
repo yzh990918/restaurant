@@ -29,6 +29,9 @@
       ><span class="b-text">{{ seller.bulletin }}</span>
       <i class="icon-keyboard_arrow_right"></i>
     </div>
+    <div class="background">
+      <img width="100%" height="100%" :src="seller.avatar" alt="" />
+    </div>
   </div>
 </template>
 
@@ -63,8 +66,9 @@ export default {
 @import '~@/assets/styles/varibles.styl'
 .header
   color: #fff
-  background: #999
   position: relative
+  // 设置样板透明度
+  background: rgba(7, 17, 27, 0.5)
   .content-wrapper
     padding: 24px 12px 18px 24px
     font-size: 0px
@@ -166,4 +170,15 @@ export default {
       font-size: 10px
       top: 10px
       right: 12px
+  .background
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    width: 100%
+    height: 100%
+    z-index: -1
+    filter: blur(10px)
+    // 设置高斯模糊
 </style>
