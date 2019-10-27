@@ -12,11 +12,11 @@
         <router-link to="/seller">商家</router-link>
       </div>
 
-      <keep-alive>
-        <!-- 显示的是当前路由地址所对应的内容 keep-alive 如果路由重新加载 就不会重新渲染(放入缓存) 就不会重新调用钩子函数 -->
-        <router-view />
-      </keep-alive>
     </div>
+    <keep-alive>
+      <!-- 显示的是当前路由地址所对应的内容 keep-alive 如果路由重新加载 就不会重新渲染(放入缓存) 就不会重新调用钩子函数 -->
+      <router-view :seller="seller"></router-view>
+    </keep-alive>
   </div>
 </template>
 
@@ -28,19 +28,19 @@ export default {
   components: {
     "v-header": header
   },
-  data() {
+  data () {
     return {
       seller: {}
     };
   },
-  mounted() {
+  mounted () {
     this.getsellerInfo();
   },
   methods: {
-    getsellerInfo() {
+    getsellerInfo () {
       axios.get("/api/seller").then(this.GetHomeInfoSucc);
     },
-    GetHomeInfoSucc(res) {
+    GetHomeInfoSucc (res) {
       res = res.data.data;
       this.seller = res;
       // window.console.log(this.seller);
