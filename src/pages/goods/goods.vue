@@ -3,9 +3,10 @@
     <div class="menu-wrapper" ref="menu">
       <ul>
         <li
-          v-for="item of goods"
+          v-for="(item, index) of goods"
           :key="item.name"
           class="menu-item border-bottom"
+          :class="{ current: currentindex === index }"
         >
           <span
             v-show="item.type > 0"
@@ -18,7 +19,11 @@
     </div>
     <div class="foods-wrapper" ref="foods">
       <ul>
-        <li v-for="item of goods" :key="item.name" class="food-list">
+        <li
+          v-for="item of goods"
+          :key="item.name"
+          class="food-list food-list-hook"
+        >
           <h1 class="title">{{ item.name }}</h1>
           <ul>
             <li
@@ -63,21 +68,48 @@ export default {
   },
   data() {
     return {
-      goods: {}
+      goods: {},
+      // 对应每个区间对应的高度
+      listheight: [],
+      //  监控滚动的实时位置的变量
+      scrollY: 0
     };
   },
 
   components: {},
 
-  computed: {},
+  computed: {
+    // 获取当前list区间的下标
+    currentindex() {
+      for (let i = 0; i < this.listheight.length; i++) {
+        // 获取落到区间的范围
+        let height1 = this.listheight[i];
+        let height2 = this.listheight[i + 1];
+        if (!height2 || (this.scrollY >= height1 && this.scrollY < height2))
+          return i;
+      }
+      return 0;
+    }
+  },
 
   beforeMount() {},
 
   mounted() {
     this.classMap = ["decrease", "discount", "special", "invoice", "guarantee"];
     this.getfoodsinfo();
-    this.scroll = new BScroll(this.$refs.foods);
-    this.scroll = new BScroll(this.$refs.menu);
+    this.scroll1 = new BScroll(this.$refs.foods, {
+      // 在滚动时 实时派发scroll事件 实现监听效果
+      probeType: 3
+    });
+    //pos.y获取到滚动的实时坐标y值  取整再取绝对值获取高度
+    this.scroll1.on("scroll", pos => {
+      this.scrollY = Math.abs(Math.round(pos.y));
+    });
+    this.scroll2 = new BScroll(this.$refs.menu);
+    this.$nextTick(() => {
+      this.calculateheight();
+    });
+    // window.console.log(this.listheight);
   },
 
   methods: {
@@ -88,6 +120,20 @@ export default {
       res = res.data.data;
       this.goods = res;
       // window.console.log(this.goods)
+    },
+    calculateheight() {
+      // 获取每个区间快的dom
+      let foodList = this.$refs.foods.getElementsByClassName("food-list-hook");
+      let height = 0;
+      this.listheight.push(height);
+      for (let i = 0; i < foodList.length; i++) {
+        // 获取每一个区间高度
+        let item = foodList[i];
+        // item.clientHeight 拿到每一个foodlist的高度 再进行累加
+        height += item.clientHeight;
+        window.console.log(height);
+        this.listheight.push(height);
+      }
     }
   },
 
@@ -96,7 +142,7 @@ export default {
 </script>
 <style lang="stylus" scoped>
 @import '~@/assets/styles/varibles.styl'
-.header, .goods
+.goods
   position: absolute
   top: 174px
   width: 100%
@@ -114,6 +160,14 @@ export default {
       width: 56px
       line-height: 14px
       padding: 0 12px
+      &.current
+        position: relative
+        margin-top: -1px
+        z-index: 10
+        font-weight: 700
+        background: #fff
+        .text
+          border-bottom: none
       .icon
         // vertical-align: middle
         margin-top: 14px
