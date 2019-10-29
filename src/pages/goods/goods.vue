@@ -48,6 +48,9 @@
                     >￥{{ food.oldPrice }}</span
                   >
                 </div>
+                <div class="carcontrol-wrapper">
+                  <carcontrol :food="food"></carcontrol>
+                </div>
               </div>
             </li>
           </ul>
@@ -63,6 +66,7 @@
 
 <script>
 import shopcar from "../shopcar/shopcar";
+import carcontrol from "../carcontrol/carcontrol";
 import BScroll from "better-scroll";
 import axios from "axios";
 export default {
@@ -83,7 +87,8 @@ export default {
   },
 
   components: {
-    shopcar
+    shopcar,
+    carcontrol
   },
 
   computed: {
@@ -119,7 +124,9 @@ export default {
     initscroll() {
       this.scroll1 = new BScroll(this.$refs.foods, {
         // 在滚动时 实时派发scroll事件 实现监听效果
-        probeType: 3
+        probeType: 3,
+        // 允许添加点击事件
+        click: true
       });
       //pos.y获取到滚动的实时坐标y值  取整再取绝对值获取高度
       this.scroll1.on("scroll", pos => {
@@ -262,4 +269,8 @@ export default {
             text-decoration: line-through
             font-size: 10px
             color: rgb(147, 153, 159)
+        .carcontrol-wrapper
+          position: absolute
+          right: 0
+          bottom: 12px
 </style>
