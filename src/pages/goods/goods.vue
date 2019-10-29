@@ -58,6 +58,7 @@
       </ul>
     </div>
     <shopcar
+      :selectfoods="selectFoods"
       :deliveryprice="seller.deliveryPrice"
       :minprice="seller.minPrice"
     ></shopcar>
@@ -78,7 +79,7 @@ export default {
   },
   data() {
     return {
-      goods: {},
+      goods: [],
       // 对应每个区间对应的高度
       listheight: [],
       //  监控滚动的实时位置的变量
@@ -103,6 +104,19 @@ export default {
         }
       }
       return 0;
+    },
+    // 定义选择的商品
+    selectFoods() {
+      let foods = [];
+      // 先遍历goods 再遍历foods
+      this.goods.forEach(good => {
+        good.foods.forEach(food => {
+          if (food.count) {
+            foods.push(food);
+          }
+        });
+      });
+      return foods;
     }
   },
 

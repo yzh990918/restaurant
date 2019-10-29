@@ -1,10 +1,14 @@
 <template>
   <div class="carcontrol">
-    <div
-      class="car-decrease icon-remove_circle_outline"
-      v-show="food.count > 0"
-      @click="decreassecount"
-    ></div>
+    <transition name="move">
+      <div
+        class="car-decrease "
+        v-show="food.count > 0"
+        @click="decreassecount"
+      >
+        <span class="inner icon-remove_circle_outline "></span>
+      </div>
+    </transition>
     <div class="car-count" v-show="food.count > 0">{{ food.count }}</div>
     <div class="car-add icon-add_circle" @click="addcart"></div>
   </div>
@@ -61,12 +65,33 @@ export default {
 <style lang="stylus" scoped>
 .carcontrol
   font-size: 0
-  .car-decrease, .car-add
+  .car-decrease
     display: inline-block
     padding: 6px
-    font-size: 24px
-    line-height: 24px
-    color: rgb(0, 160, 220)
+    // // 最终样式
+    // opacity: 1
+    // // 为了让动画加载更流畅 硬件加速
+    // transform: translate3d(0, 0, 0)
+    opacity: 1
+    transform: translate3d(0, 0, 0)
+    .inner
+      display: inline-block
+      font-size: 24px
+      line-height: 24px
+      color: rgb(0, 160, 220)
+      transition: all 0.4s linear
+      transform: rotate(0)
+      // 线性过度0.4
+      // transition: all 0.4s linear
+      // // 最终滚动状态
+      // transform: rotate(0)
+    &.move-enter, &.move-leave-active
+      opacity: 0
+      transform: translate3d(24px, 0, 0)
+      .inner
+        transform: rotate(180deg)
+    &.move-enter-active, &.move-leave-active
+      transition: all 0.4s linear
   .car-count
     display: inline-block
     vertical-align: top
@@ -78,4 +103,8 @@ export default {
     color: rgb(147, 153, 159)
   .car-add
     display: inline-block
+    padding: 6px
+    font-size: 24px
+    line-height: 24px
+    color: rgb(0, 160, 220)
 </style>
