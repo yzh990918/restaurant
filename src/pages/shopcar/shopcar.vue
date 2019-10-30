@@ -22,6 +22,21 @@
         <div :class="payClass" class="pay">{{ paydesc }}</div>
       </div>
     </div>
+    <div class="ball-container">
+      <!-- 便遍历小球 -->
+      <div v-for="ball in balls" :key="ball.id">
+        <transition
+          name="drop"
+          @before-enter="beforeDrop"
+          @enter="Droping"
+          @after-enter="afterDrop"
+        >
+          <div class="ball" v-show="ball.show">
+            <div class="inner inner-hook"></div>
+          </div>
+        </transition>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -47,7 +62,30 @@ export default {
   data() {
     return {
       deprice: this.deliveryprice,
-      mprice: this.minprice
+      mprice: this.minprice,
+      balls: [
+        {
+          show: false,
+          id: 1
+        },
+        {
+          show: false,
+          id: 2
+        },
+        {
+          show: false,
+          id: 3
+        },
+        {
+          show: false,
+          id: 4
+        },
+        {
+          show: false,
+          id: 5
+        }
+      ],
+      dropBall: []
     };
   },
 
@@ -96,7 +134,68 @@ export default {
 
   mounted() {},
 
-  methods: {},
+  methods: {
+    drop(el) {
+      //找到隐藏的小球 show置为true 然后保存element 再将它添加到dropBall数组中
+      for (let i = 0; i < this.balls.length; i++) {
+        let ball = this.balls[i];
+        if (!ball.show) {
+          ball.show = true;
+          ball.el = el;
+          // 后面需要对droBall进行处理
+          this.dropBall.push(ball);
+          return;
+        }
+      }
+    },
+    // js钩子来实现动画
+    beforeDrop(el) {
+      // 拿到设为show的小球
+      let count = this.balls.length;
+      while (count--) {
+        let ball = this.balls[count];
+        if (ball.show) {
+          // 获取carcontrol对应的位置 视口的位置可以通过rect.left..获取
+          let rect = ball.el.getBoundingClientRect();
+          // x轴偏移量 y轴偏移量
+          let x = rect.left - 32;
+          let y = -(window.innerHeight - rect.top - 22);
+          // 显示元素  v-show display会显示为空
+          el.style.display = "";
+          // 外层做y轴平移动画 内层做y轴动画
+          el.style.webkitTransform = `translate3d(0,${y}px,0)`;
+          el.style.transform = `translate3d(0,${y}px,0)`;
+          let inner = el.getElementsByClassName("inner-hook")[0];
+          inner.style.webkitTransform = `translate3d(${x}px,0,0)`;
+          inner.style.transform = `translate3d(${x}px,0,0)`;
+        }
+      }
+    },
+    Droping(el, done) {
+      // 防止eslint 检验未使用变量报错  手动重绘浏览器
+      /*eslint-disable no-unused-vars */
+      let rf = el.offsetHeight;
+      // 将动画置为初始状态
+      this.$nextTick(() => {
+        el.style.webkitTransform = "translate3d(0,0,0)";
+        el.style.transform = "translate3d(0,0,0)";
+        let inner = el.getElementsByClassName("inner-hook")[0];
+        inner.style.webkitTransform = "translate3d(0,0,0)";
+        inner.style.transform = "translate3d(0,0,0)";
+        // 过渡完成 结束 否则无法完成动画
+        el.addEventListener("transitionend", done);
+      });
+    },
+    afterDrop(el) {
+      // 完成一个动画删除掉dropBall的一个球
+      let ball = this.dropBall.shift();
+      // 取出来的小球状态重置
+      if (ball) {
+        ball.show = false;
+        el.style.display = "none";
+      }
+    }
+  },
 
   watch: {}
 };
@@ -195,4 +294,18 @@ export default {
         &.enough
           background: #00b43c
           color: #fff
+  .ball-container
+    .ball
+      position: fixed
+      // 相对于视口动画
+      left: 32px
+      bottom: 22px
+      z-index: 200
+      transition: all 0.4s cubic-bezier(0.49, -0.29, 0.75, 0.41)
+      .inner
+        width: 16px
+        height: 16px
+        border-radius: 50%
+        background: rgb(0, 160, 220)
+        transition: all 0.4s linear
 </style>

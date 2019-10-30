@@ -49,7 +49,7 @@
                   >
                 </div>
                 <div class="carcontrol-wrapper">
-                  <carcontrol :food="food"></carcontrol>
+                  <carcontrol @addcar="handleaddcar" :food="food"></carcontrol>
                 </div>
               </div>
             </li>
@@ -58,6 +58,7 @@
       </ul>
     </div>
     <shopcar
+      ref="shopcar"
       :selectfoods="selectFoods"
       :deliveryprice="seller.deliveryPrice"
       :minprice="seller.minPrice"
@@ -128,6 +129,16 @@ export default {
   },
 
   methods: {
+    handleaddcar(target) {
+      this.drop(target);
+    },
+    drop(target) {
+      // 体验优化,异步执行下落动画
+      // 调用shopcar里面的drop方法
+      this.$nextTick(() => {
+        this.$refs.shopcar.drop(target);
+      });
+    },
     selectMenu(index) {
       var foodList = this.$refs.foods.getElementsByClassName("food-list-hook");
       // 获取对应下标的区块dom

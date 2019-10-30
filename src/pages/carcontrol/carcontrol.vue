@@ -47,6 +47,8 @@ export default {
       } else {
         this.food.count++;
       }
+      // 派发addcar 参数为dom对象
+      this.$emit("addcar", e.target);
     },
     decreassecount(e) {
       if (!e._constructed) {
