@@ -1,6 +1,6 @@
 <template>
   <div class="shopcar">
-    <div class="content">
+    <div class="content " @click="toggleList">
       <div class="content-left">
         <div class="logo-wrapper">
           <!-- 设置高亮样式 -->
@@ -37,10 +37,31 @@
         </transition>
       </div>
     </div>
+    <div class="shopcar-list" v-show="listShow">
+      <div class="list-header">
+        <h1 class="title">购物车</h1>
+        <span class="empty">清空</span>
+      </div>
+      <div class="list-content" ref="listcontent">
+        <ul>
+          <li class="food" v-for="food of selectfoods" :key="food.name">
+            <span class="name">{{ food.name }}</span>
+            <div class="price">
+              <span>￥{{ food.count * food.price }}</span>
+            </div>
+            <div class="carcontrol-wrapper">
+              <carcontrol></carcontrol>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import carcontrol from "../carcontrol/carcontrol";
+// import BScroll from "better-scroll";
 export default {
   name: "shopcar",
   props: {
@@ -50,7 +71,7 @@ export default {
       default() {
         return [
           {
-            price: 22,
+            price: 10,
             count: 1
           }
         ];
@@ -63,6 +84,7 @@ export default {
     return {
       deprice: this.deliveryprice,
       mprice: this.minprice,
+
       balls: [
         {
           show: false,
@@ -85,11 +107,14 @@ export default {
           id: 5
         }
       ],
-      dropBall: []
+      dropBall: [],
+      fold: true
     };
   },
 
-  components: {},
+  components: {
+    carcontrol
+  },
 
   computed: {
     totalPrice() {
@@ -127,6 +152,16 @@ export default {
       } else {
         return "enough";
       }
+    },
+    listShow() {
+      if (this.totalCount < 0) {
+        // this.fold = true;
+        return false;
+      }
+      if (this.totalcount > 0 && !this.fold) {
+        return true;
+      }
+      return false;
     }
   },
 
@@ -194,10 +229,36 @@ export default {
         ball.show = false;
         el.style.display = "none";
       }
+    },
+    toggleList() {
+      window.console.log(this.totalcount);
+      setTimeout(() => {
+        window.console.log(this.selectfoods);
+      }, 1000);
+
+      if (!this.totalcount) {
+        return;
+      }
+      this.fold = !this.fold;
     }
   },
 
-  watch: {}
+  watch: {
+    selectfoods() {
+      this.fold = false;
+    }
+  }
+
+  // watch: {
+  //   listshow() {
+  //     if (!this.totalcount) {
+  //       this.fold = true;
+  //       return false;
+  //     }
+  //     let show = !this.fold;
+  //     return show;
+  //   }
+  // }
 };
 </script>
 <style lang="stylus" scoped>
