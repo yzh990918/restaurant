@@ -6,7 +6,7 @@
 export default {
   name: "Seller",
   props: [""],
-  data () {
+  data() {
     return {};
   },
 
@@ -14,9 +14,9 @@ export default {
 
   computed: {},
 
-  beforeMount () { },
+  beforeMount() {},
 
-  mounted () { },
+  mounted() {},
 
   methods: {},
 

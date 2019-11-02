@@ -1,67 +1,78 @@
 <template>
-  <div class="shopcar">
-    <div class="content " @click="toggleList">
-      <div class="content-left">
-        <div class="logo-wrapper">
-          <!-- 设置高亮样式 -->
-          <div class="logo" :class="{ highLight: totalcount > 0 }">
-            <span
-              class="icon-shopping_cart"
-              :class="{ highLight: totalcount > 0 }"
-            ></span>
-          </div>
-          <!-- 购物数量图标样式 如果购物车无货 则默认样式为不显示 -->
-          <div v-show="totalcount > 0" class="num">{{ totalcount }}</div>
-        </div>
-        <div class="price" :class="{ highLight: totalcount > 0 }">
-          ￥{{ totalPrice }}元
-        </div>
-        <div class="desc">另需配送费￥{{ deliveryprice }}元</div>
-      </div>
-      <div class="content-right">
-        <div :class="payClass" class="pay">{{ paydesc }}</div>
-      </div>
-    </div>
-    <div class="ball-container">
-      <!-- 便遍历小球 -->
-      <div v-for="ball in balls" :key="ball.id">
-        <transition
-          name="drop"
-          @before-enter="beforeDrop"
-          @enter="Droping"
-          @after-enter="afterDrop"
-        >
-          <div class="ball" v-show="ball.show">
-            <div class="inner inner-hook"></div>
-          </div>
-        </transition>
-      </div>
-    </div>
-    <div class="shopcar-list" v-show="listShow">
-      <div class="list-header">
-        <h1 class="title">购物车</h1>
-        <span class="empty">清空</span>
-      </div>
-      <div class="list-content" ref="listcontent">
-        <ul>
-          <li class="food" v-for="food of selectfoods" :key="food.name">
-            <span class="name">{{ food.name }}</span>
-            <div class="price">
-              <span>￥{{ food.count * food.price }}</span>
+  <div>
+    <div class="shopcar">
+      <div class="content " @click="toggleList">
+        <div class="content-left">
+          <div class="logo-wrapper">
+            <!-- 设置高亮样式 -->
+            <div class="logo" :class="{ highLight: totalcount > 0 }">
+              <span
+                class="icon-shopping_cart"
+                :class="{ highLight: totalcount > 0 }"
+              ></span>
             </div>
-            <div class="carcontrol-wrapper">
-              <carcontrol></carcontrol>
-            </div>
-          </li>
-        </ul>
+            <!-- 购物数量图标样式 如果购物车无货 则默认样式为不显示 -->
+            <div v-show="totalcount > 0" class="num">{{ totalcount }}</div>
+          </div>
+          <div class="price" :class="{ highLight: totalcount > 0 }">
+            ￥{{ totalPrice }}元
+          </div>
+          <div class="desc">另需配送费￥{{ deliveryprice }}元</div>
+        </div>
+        <div @click.stop.prevent="pay" class="content-right">
+          <div :class="payClass" class="pay">{{ paydesc }}</div>
+        </div>
       </div>
+      <div class="ball-container">
+        <!-- 便遍历小球 -->
+        <div v-for="ball in balls" :key="ball.id">
+          <transition
+            name="drop"
+            @before-enter="beforeDrop"
+            @enter="Droping"
+            @after-enter="afterDrop"
+          >
+            <div class="ball" v-show="ball.show">
+              <div class="inner inner-hook"></div>
+            </div>
+          </transition>
+        </div>
+      </div>
+      <transition name="fold">
+        <div class="shopcar-list" v-show="listShow">
+          <div class="list-header">
+            <h1 class="title">购物车</h1>
+            <span class="empty" @click="empty">清空</span>
+          </div>
+          <div class="list-content" ref="listcontent">
+            <ul>
+              <li
+                class="food border-bottom"
+                v-for="food of selectfoods"
+                :key="food.name"
+              >
+                <span class="name">{{ food.name }}</span>
+                <div class="price">
+                  <span>￥{{ food.price * food.count }}</span>
+                </div>
+                <div class="carcontrol-wrapper">
+                  <carcontrol :food="food"></carcontrol>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </transition>
     </div>
+    <transition name="fade">
+      <div class="list-mark" v-show="listShow" @click="hidelist"></div>
+    </transition>
   </div>
 </template>
 
 <script>
 import carcontrol from "../carcontrol/carcontrol";
-// import BScroll from "better-scroll";
+import BScroll from "better-scroll";
 export default {
   name: "shopcar",
   props: {
@@ -84,6 +95,8 @@ export default {
     return {
       deprice: this.deliveryprice,
       mprice: this.minprice,
+      count: this.selectfoods.count,
+      price: this.selectfoods.price,
 
       balls: [
         {
@@ -170,6 +183,15 @@ export default {
   mounted() {},
 
   methods: {
+    pay() {
+      if (this.totalPrice < this.minprice) {
+        return;
+      }
+      window.alert(`支付${this.totalPrice}元`);
+    },
+    hidelist() {
+      this.fold = true;
+    },
     drop(el) {
       //找到隐藏的小球 show置为true 然后保存element 再将它添加到dropBall数组中
       for (let i = 0; i < this.balls.length; i++) {
@@ -231,34 +253,35 @@ export default {
       }
     },
     toggleList() {
-      window.console.log(this.totalcount);
-      setTimeout(() => {
-        window.console.log(this.selectfoods);
-      }, 1000);
+      // window.console.log(this.totalcount);
+      // setTimeout(() => {
+      //   window.console.log(this.selectfoods);
+      // }, 1000);
 
       if (!this.totalcount) {
         return;
       }
       this.fold = !this.fold;
+      if (!this.fold) {
+        this.scroll = new BScroll(this.$refs.listcontent, {
+          click: true
+        });
+      }
+    },
+    empty() {
+      this.selectfoods.forEach(food => {
+        food.count = 0;
+      });
     }
   },
 
   watch: {
-    selectfoods() {
-      this.fold = false;
+    selectedfoods(newFoods, oldFoods) {
+      if (newFoods.length === 0) {
+        this.fold = true;
+      }
     }
   }
-
-  // watch: {
-  //   listshow() {
-  //     if (!this.totalcount) {
-  //       this.fold = true;
-  //       return false;
-  //     }
-  //     let show = !this.fold;
-  //     return show;
-  //   }
-  // }
 };
 </script>
 <style lang="stylus" scoped>
@@ -369,4 +392,67 @@ export default {
         border-radius: 50%
         background: rgb(0, 160, 220)
         transition: all 0.4s linear
+  .shopcar-list
+    position: absolute
+    left: 0
+    top: 0
+    z-index: -1
+    width: 100%
+    transition: all 0.5s
+    // 相对shocar 向上偏移100% 定义最终状态
+    transform: translate3d(0, -100%, 0)
+    &.fold-enter, &.fold-leave-active
+      transform: translate3d(0, 0, 0)
+    .list-header
+      height: 40px
+      line-height: 40px
+      padding: 0 18px
+      background: #f3f5f7
+      border-bottom: 1px solid rgba(7, 17, 27, 0.1)
+      .title
+        float: left
+        font-size: 14px
+        color: rgb(7, 17, 27)
+      .empty
+        float: right
+        font-size: 12px
+        color: rgb(0, 160, 220)
+    .list-content
+      padding: 0 18px
+      max-height: 217px
+      background: #fff
+      overflow: hidden
+      .food
+        position: relative
+        padding: 12px 0
+        box-sizing: border-box
+        .name
+          line-height: 24px
+          font-size: 14px
+          color: rgb(7, 17, 27)
+        .price
+          position: absolute
+          right: 90px
+          bottom: 12px
+          line-height: 24px
+          font-size: 14px
+          color: rgb(240, 20, 20)
+          font-weight: 700
+        .carcontrol-wrapper
+          position: absolute
+          right: 0
+          bottom: 6px
+.list-mark
+  position: fixed
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  z-index: 40
+  opacity: 1
+  background: rgba(7, 17, 27, 0.6)
+  transition: all 0.5s
+  &.fade-enter, &.fade-leave-active
+    opacity: 0
+    background: rgba(7, 17, 27, 0)
 </style>
