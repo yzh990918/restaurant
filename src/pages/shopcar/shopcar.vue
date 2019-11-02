@@ -159,7 +159,7 @@ export default {
     },
 
     payClass() {
-      // 监控购物车商品总价是否达到起送 然后更改样式
+      // 监控购物车商品总价是否达到起送 然后更改样式 购物车右侧样式
       if (this.totalPrice < this.minprice) {
         return "not-enough";
       } else {
