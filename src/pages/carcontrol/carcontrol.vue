@@ -4,13 +4,13 @@
       <div
         class="car-decrease "
         v-show="food.count > 0"
-        @click="decreassecount"
+        @click.stop.prevent="decreassecount"
       >
         <span class="inner icon-remove_circle_outline "></span>
       </div>
     </transition>
     <div class="car-count" v-show="food.count > 0">{{ food.count }}</div>
-    <div class="car-add icon-add_circle" @click="addcart"></div>
+    <div class="car-add icon-add_circle" @click.stop.prevent="addcart"></div>
   </div>
 </template>
 

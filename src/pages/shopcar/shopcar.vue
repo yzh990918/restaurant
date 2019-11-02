@@ -327,6 +327,7 @@ export default {
             &.highLight
               color: #fff
         .num
+          // 当购物车有东西时显示此图标
           position: absolute
           top: 0
           right: 0

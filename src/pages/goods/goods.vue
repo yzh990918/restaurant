@@ -29,7 +29,7 @@
             <h1 class="title">{{ item.name }}</h1>
             <ul>
               <li
-                @click="selectFood(food, $event)"
+                @click.stop.prevent="selectFood(food, $event)"
                 v-for="food in item.foods"
                 :key="food.name"
                 class="food-item border-bottom"
@@ -123,6 +123,7 @@ export default {
       this.goods.forEach(good => {
         good.foods.forEach(food => {
           if (food.count) {
+            //有这个count字段 就向数组中添加元素 count被carcontrol操作
             foods.push(food);
           }
         });
