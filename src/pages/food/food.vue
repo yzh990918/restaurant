@@ -1,53 +1,68 @@
 <template>
   <transition name="move">
-    <div ref="food" v-show="showFlag" class="food">
-      <div class="food-content">
-        <div class="image-header">
-          <img :src="food.image" />
-          <div class="back" @click="hide">
-            <i class="icon-arrow_lift"></i>
-          </div>
-        </div>
-        <div class="content">
-          <h1 class="title">{{ food.name }}</h1>
-          <div class="detail">
-            <span class="sell-count">月售{{ food.count }}份</span>
-            <span class="rating">好评率{{ food.rating }}</span>
-          </div>
-          <div class="price">
-            <span class="now">￥{{ food.price }}</span
-            ><span class="old" v-show="food.oldPrice"
-              >￥{{ food.oldPrice }}</span
-            >
-          </div>
-          <div class="carcontrol-wrapper">
-            <carcontrol :food="food"></carcontrol>
-          </div>
-          <transition name="fade">
-            <div
-              @click="addFirst"
-              class="buy"
-              v-show="!food.count || food.count == 0"
-            >
-              加入购物车
+    <div v-show="showFlag" class="food">
+      <cube-scroll ref="scroll">
+        <div class="food-content">
+          <div class="image-header">
+            <img :src="food.image" />
+            <div class="back" @click="hide">
+              <i class="icon-arrow_lift"></i>
             </div>
-          </transition>
+          </div>
+          <div class="content">
+            <h1 class="title">{{ food.name }}</h1>
+            <div class="detail">
+              <span class="sell-count">月售{{ food.count }}份</span>
+              <span class="rating">好评率{{ food.rating }}</span>
+            </div>
+            <div class="price">
+              <span class="now">￥{{ food.price }}</span
+              ><span class="old" v-show="food.oldPrice"
+                >￥{{ food.oldPrice }}</span
+              >
+            </div>
+            <div class="carcontrol-wrapper">
+              <carcontrol :food="food"></carcontrol>
+            </div>
+            <transition name="fade">
+              <div
+                @click="addFirst"
+                class="buy"
+                v-show="!food.count || food.count == 0"
+              >
+                加入购物车
+              </div>
+            </transition>
+          </div>
         </div>
-      </div>
-      <split v-show="food.info"></split>
-      <div class="info" v-show="food.info">
-        <h1 class="title">商品信息</h1>
-        <p class="text">{{ food.info }}</p>
-      </div>
+        <split v-show="food.info"></split>
+        <div class="info" v-show="food.info">
+          <h1 class="title">商品信息</h1>
+          <p class="text">{{ food.info }}</p>
+        </div>
+        <split></split>
+        <div class="rating">
+          <h1 class="title">商家评价</h1>
+          <ratingselect
+            :select-type="selectType"
+            :only-content="onlyContent"
+            :desc="desc"
+            :ratings="food.ratings"
+          ></ratingselect>
+        </div>
+      </cube-scroll>
     </div>
   </transition>
 </template>
 
 <script>
-import BScorll from "better-scroll";
+// const POSITIVE = 0;
+// const NEGATIVE = 1;
+const All = 2;
 import carcontrol from "../carcontrol/carcontrol";
 import split from "../split/split";
 import Vue from "vue";
+import ratingselect from "../ratingselect/ratingselect";
 export default {
   name: "food",
   props: {
@@ -57,33 +72,41 @@ export default {
   },
   data() {
     return {
-      showFlag: false
+      showFlag: false,
+      selectType: All,
+      onlyContent: true,
+      desc: {
+        all: "全部",
+        positive: "推荐",
+        negative: "吐槽"
+      }
     };
   },
 
   components: {
     carcontrol,
-    split
+    split,
+    ratingselect
   },
 
   computed: {},
 
   beforeMount() {},
 
-  mounted() {},
+  mounted() {
+    this.$on("show", () => {
+      this.$nextTick(() => {
+        this.$refs.scroll.refresh();
+      });
+    });
+  },
 
   methods: {
     show() {
       this.showFlag = true;
-      this.$nextTick(() => {
-        if (!this.scroll) {
-          this.scroll = new BScorll(this.$refs.food, {
-            click: true
-          });
-        } else {
-          this.scroll.refresh();
-        }
-      });
+      // 初始化状态 默认样式
+      this.selectType = All;
+      this.onlyContent = true;
     },
     hide() {
       this.showFlag = false;
@@ -94,9 +117,15 @@ export default {
       Vue.set(this.food, "count", 1);
       this.$emit("addcar", e.target);
     }
-  },
+  }
 
-  watch: {}
+  // watch: {
+  //   food() {
+  //     this.scroll = new BScroll(this.$refs.food, {
+  //       click: true
+  //     });
+  //   }
+  // }
 };
 </script>
 <style lang="stylus" scoped>
@@ -108,6 +137,7 @@ export default {
   // 小于购物车层 和弹窗层
   z-index: 30
   width: 100%
+  // overflow: hidden
   background: #fff
   transform: translate3d(0, 0, 0)
   transition: all 0.2s linear
@@ -170,6 +200,7 @@ export default {
       bottom: 12px
     .buy
       position: absolute
+      // 购物车蓝色区域 默认是盖住carcontrol
       right: 18px
       bottom: 18px
       z-index: 10
@@ -198,4 +229,12 @@ export default {
       font-size: 12px
       padding: 0 8px
       color: rgb(77, 85, 93)
+  .rating
+    padding-top: 18px
+    .title
+      line-height: 14px
+      margin-left: 18px
+      font-size: 14px
+      color: rgb(7, 17, 27)
+      font-weight: 700
 </style>

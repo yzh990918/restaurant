@@ -141,6 +141,7 @@ export default {
 
   methods: {
     handleaddcar(target) {
+      //添加的时候传入dom给购物车 去做添加处理
       this.drop(target);
     },
     drop(target) {
