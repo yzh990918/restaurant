@@ -76,7 +76,7 @@ export default {
       // 适配iphone5
       @media only screen and (max-width: 320px)
         flex: 0 0 120px
-        width: 137px
+        width: 120px
       .score
         margin-bottom: 6px
         line-height: 28px
