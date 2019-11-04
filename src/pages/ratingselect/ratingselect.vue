@@ -1,17 +1,32 @@
 <template>
   <div class="ratingselect">
     <div class="rating-type border-bottom">
-      <span class="block positive" :class="{ active: selectType === 2 }"
-        >{{ desc.all }}<span class="count">47</span></span
+      <span
+        @click="select(2, $event)"
+        class="block positive"
+        :class="{ active: this.selectT === 2 }"
+        >{{ desc.all }}<span class="count">{{ ratings.length }}</span></span
       >
-      <span class="block positive" :class="{ active: selectType === 0 }"
-        >{{ desc.positive }}<span class="count">40</span></span
+      <span
+        @click="select(0, $event)"
+        class="block positive"
+        :class="{ active: this.selectT === 0 }"
+        >{{ desc.positive
+        }}<span class="count">{{ positives.length }}</span></span
       >
-      <span class="block negative" :class="{ active: selectType === 1 }"
-        >{{ desc.negative }}<span class="count">7</span></span
+      <span
+        @click="select(1, $event)"
+        class="block negative"
+        :class="{ active: this.selectT === 1 }"
+        >{{ desc.negative
+        }}<span class="count">{{ negatives.length }}</span></span
       >
     </div>
-    <div class="switch">
+    <div
+      @click="togglecontent"
+      class="switch border-bottom"
+      :class="{ on: this.onlycontent === true }"
+    >
       <span class="icon-check_circle"></span>
       <span class="text">只看有内容的评价</span>
     </div>
@@ -19,8 +34,8 @@
 </template>
 
 <script>
-// const POSITIVE = 0;
-// const NEGATIVE = 1;
+const POSITIVE = 0;
+const NEGATIVE = 1;
 const All = 2;
 export default {
   name: "ratingselect",
@@ -54,18 +69,49 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      selectT: this.selectType,
+      onlycontent: this.onlyContent
+    };
   },
 
   components: {},
 
-  computed: {},
+  computed: {
+    positives() {
+      //过滤 返回的是满意的ratings数组
+      return this.ratings.filter(rating => {
+        return rating.rateType === POSITIVE;
+      });
+    },
+    negatives() {
+      return this.ratings.filter(rating => {
+        return rating.rateType === NEGATIVE;
+      });
+    }
+  },
 
   beforeMount() {},
 
   mounted() {},
 
-  methods: {},
+  methods: {
+    select(type, event) {
+      //点击事件改变selectType
+      if (!event._constructed) {
+        return;
+      }
+      this.selectT = type;
+      this.$emit("ratingtypeselect", type);
+    },
+    togglecontent(event) {
+      if (!event._constructed) {
+        return;
+      }
+      this.onlycontent = !this.onlycontent;
+      this.$emit("contenttoggle", this.onlycontent);
+    }
+  },
 
   watch: {}
 };
@@ -97,4 +143,21 @@ export default {
         background: rgba(77, 85, 93, 0.2)
         &.active
           background: rgb(77, 85, 93)
+  .switch
+    padding: 12px 18px
+    line-height: 24px
+    color: rgb(147, 153, 159)
+    &.on
+      .icon-check_circle
+        color: #00c850
+    .icon-check_circle
+      display: inline-block
+      vertical-align: top
+      margin-right: 4px
+      font-size: 24px
+      color: rgb(147, 153, 159)
+    .text
+      font-size: 12px
+      color: rgb(147, 153, 159)
+      display: inline-block
 </style>

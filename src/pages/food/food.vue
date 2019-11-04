@@ -44,11 +44,53 @@
         <div class="rating">
           <h1 class="title">商家评价</h1>
           <ratingselect
+            @ratingtypeselect="handlerating"
+            @contenttoggle="handlecontent"
             :select-type="selectType"
             :only-content="onlyContent"
             :desc="desc"
             :ratings="food.ratings"
           ></ratingselect>
+        </div>
+        <div class="rating-wrapper">
+          <!-- ratings不能为空数值 也不能为空 -->
+          <ul v-show="food.ratings && food.ratings.length">
+            <li
+              v-show="needShow(rating.rateType, rating.text)"
+              v-for="rating of food.ratings"
+              :key="rating.length"
+              class="rating-item border-bottom"
+            >
+              <div class="user">
+                <!-- 用户区 -->
+                <span class="name">{{ rating.username }}</span>
+                <img
+                  class="avatar"
+                  width="12"
+                  height="12"
+                  :src="rating.avatar"
+                  alt=""
+                />
+              </div>
+              <div class="time">
+                <!-- 时间  插值中filter写法 |-->
+                {{ rating.rateTime | formatDate }}
+              </div>
+              <!-- 评论 -->
+              <p class="text">
+                <span
+                  :class="{
+                    'icon-thumb_up': rating.rateType === 0,
+                    'icon-thumb_down': rating.rateType === 1
+                  }"
+                ></span
+                ><span>{{ rating.text }}</span>
+              </p>
+            </li>
+          </ul>
+          <div class="no-rating" v-show="!food.ratings || !food.ratings.length">
+            暂时无评价
+          </div>
         </div>
       </cube-scroll>
     </div>
@@ -63,6 +105,8 @@ import carcontrol from "../carcontrol/carcontrol";
 import split from "../split/split";
 import Vue from "vue";
 import ratingselect from "../ratingselect/ratingselect";
+// import 方法写法 花括号
+import { formatDate } from "../../common/js/date";
 export default {
   name: "food",
   props: {
@@ -87,6 +131,13 @@ export default {
     carcontrol,
     split,
     ratingselect
+  },
+  filters: {
+    formatDate(time) {
+      let date = new Date(time);
+      // 转化格式 模块化书写formatDate
+      return formatDate(date, "yyyy-MM-dd hh:mm");
+    }
   },
 
   computed: {},
@@ -116,6 +167,25 @@ export default {
       // 设置count为1
       Vue.set(this.food, "count", 1);
       this.$emit("addcar", e.target);
+    },
+    needShow(type, text) {
+      if (this.onlyContent && !text) {
+        // 判断是否显示内容 如果没有文本或者字显示内容 就不显示
+        return false;
+      }
+      if (this.selectType === All) {
+        // 如果selectType为All
+        return true;
+      } else {
+        // 选择类型和这条list的type相同才显示
+        return type === this.selectType;
+      }
+    },
+    handlerating(type) {
+      this.selectType = type;
+    },
+    handlecontent(onlycontent) {
+      this.onlyContent = onlycontent;
     }
   }
 
@@ -237,4 +307,44 @@ export default {
       font-size: 14px
       color: rgb(7, 17, 27)
       font-weight: 700
+  .rating-wrapper
+    padding: 0 18px
+    .rating-item
+      position: relative
+      padding: 16px 0
+      .user
+        position: absolute
+        right: 0
+        top: 16px
+        font-size: 0
+        line-height: 12px
+        .name
+          display: inline-block
+          vertical-align: top
+          font-size: 10px
+          color: rgb(147, 153, 159)
+          margin-right: 6px
+        .avatar
+          border-radius: 50%
+      .time
+        margin-bottom: 6px
+        line-height: 12px
+        font-size: 10px
+        color: rgb(147, 153, 159)
+      .text
+        line-height: 16px
+        font-size: 12px
+        color: rgb(7, 17, 27)
+        .icon-thumb_up, .icon-thumb_dowm
+          line-height: 16px
+          margin-right: 4px
+          font-size: 12px
+        .icon-thumb_up
+          color: rgb(0, 160, 220)
+        .icon-thumb_down
+          color: rgb(147, 153, 159)
+    .no-rating
+      padding: 16px 0
+      font-size: 12px
+      color: rgb(147, 153, 159)
 </style>
