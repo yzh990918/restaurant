@@ -7,6 +7,7 @@ The project requires a vue-cli4.0 build. This may require uninstalling your prev
 ```
 
 vue conversion tool:[vue-migration-helper](https://github.com/vuejs/vue-migration-helper)
+The project path:[项目地址](http://47.97.180.232:8202/#/)
 
 #### Here are some toogle pictures for the project
 
