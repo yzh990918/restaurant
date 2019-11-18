@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="./src/assets/QQ截图20191118215735.png">
+  <img width="400" height="400" src="./src/assets/QQ截图20191118215735.png">
 </p>
 <p align="center">
   <a href="https://github.com/vuejs/vue">
