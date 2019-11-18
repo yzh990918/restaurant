@@ -1,7 +1,7 @@
 # restaurant
 
 ### A vue.js project which was similar with the take-out restaurant .
-
+![vue](https://img.shields.io/cocoapods/p/{项目名称}.svg?style=flat)
 ```
 The project requires a vue-cli4.0 build. This may require uninstalling your previous vue-cli version or you may use the official vue conversion tool for version transfer
 ```
