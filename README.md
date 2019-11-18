@@ -1,7 +1,7 @@
 # restaurant
 
 ### A vue.js project which was similar with the take-out restaurant .
-![](https://img.shields.io/badge/license-MIT-000000.svg)
+![](https://img.shields.io/badge/license-MIT-000000.svg) ![](https://img.shields.io/badge/language-vue-green.svg)
 ```
 The project requires a vue-cli4.0 build. This may require uninstalling your previous vue-cli version or you may use the official vue conversion tool for version transfer
 ```
