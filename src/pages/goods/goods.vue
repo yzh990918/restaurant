@@ -157,6 +157,9 @@ export default {
       let el = foodList[index];
       // 利用scrollToElement 设置点击后切换到改元素
       this.scroll1.scrollToElement(el, 300);
+      window.console.log(this.scrollY);
+      window.console.log(this.listheight);
+      window.console.log(this.currentindex);
     },
     initscroll() {
       this.scroll1 = new BScroll(this.$refs.foods, {
